@@ -23,3 +23,7 @@ $ npm run start
 # generate static project
 $ npm run generate
 ```
+
+## Preview
+
+![movie-app-nuxt](./assets/img/ss-app.png 'Text to show on mouseover')
