@@ -47,8 +47,7 @@ export default {
   
   data() {
     return{
-      movie : '',
-      apikey : process.env.apikey,
+      movie : ''
     }
   },
 

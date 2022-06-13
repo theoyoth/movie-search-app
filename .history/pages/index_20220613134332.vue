@@ -122,7 +122,7 @@ export default {
       })
     },
     async getSearchedMovies(){
-      const data = axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${this.apikey}&language=en-US&page=1&query=${this.searchInput}`)
+      const data = axios.get(`https://api.themoviedb.org/3/search/movie?api_key=d7a43991c351fc435f06627114f15aba&language=en-US&page=1&query=${this.searchInput}`)
       const result = await data
       result.data.results.forEach(movie => {
       this.searchedMovies.push(movie)

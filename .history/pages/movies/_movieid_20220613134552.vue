@@ -44,11 +44,11 @@
 import axios from 'axios'
 export default {
   name : "SingleMovie",
+  apikey : process.env.apikey,
   
   data() {
     return{
-      movie : '',
-      apikey : process.env.apikey,
+      movie : ''
     }
   },
 

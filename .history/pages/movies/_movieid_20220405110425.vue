@@ -47,8 +47,7 @@ export default {
   
   data() {
     return{
-      movie : '',
-      apikey : process.env.apikey,
+      movie : ''
     }
   },
 
@@ -64,7 +63,7 @@ export default {
   fetchDelay : 1000,
   methods:{
     async getSingleMovie(){
-      const data = await axios.get(`https://api.themoviedb.org/3/movie/${this.$route.params.movieid}?api_key=${this.apikey}&language=en-US`)
+      const data = await axios.get(`https://api.themoviedb.org/3/movie/${this.$route.params.movieid}?api_key=d7a43991c351fc435f06627114f15aba&language=en-US`)
 
       const result = data
       this.movie = result.data 
