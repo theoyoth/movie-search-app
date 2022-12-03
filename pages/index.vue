@@ -1,144 +1,172 @@
 <template>
-<div class="home">
-  <!-- hero -->
-  <Hero/>
+  <div class="home">
+    <!-- hero -->
+    <Hero />
 
-<!-- search -->
-<div class="container search">
-  <input  v-model.lazy="searchInput"  type="text" placeholder="press enter after type" @keyup.enter="$fetch"/>
-  <button v-show="searchInput !== ''" class="button" @click="clearSearch">clear search</button>
-</div>
+    <!-- search -->
+    <div class="container search">
+      <input
+        v-model.lazy="searchInput"
+        type="text"
+        placeholder="press enter after type"
+        @keyup.enter="$fetch"
+      />
+      <button v-show="searchInput !== ''" class="button" @click="clearSearch">
+        clear search
+      </button>
+    </div>
 
-<!-- loading -->
-<Loading v-if="$fetchState.pending"/>
+    <!-- loading -->
+    <Loading v-if="$fetchState.pending" />
 
-  <!-- movies -->
-  <div v-else class="container movies"> 
-    <!-- searched movies -->
-    <div v-if="searchInput !== ''" id="movies-grid" class="movies-grid">
-      <div v-for="(movie,index) in searchedMovies" :key="index" class="movie">
-        <div class="movie-img">
-          <img :src="`https://image.tmdb.org/t/p/w500/${movie.poster_path}`" alt="">
-          <p class="review">{{movie.vote_average}}</p>
-          <p class="overview">{{movie.overview}}</p>
+    <!-- movies -->
+    <div v-else class="container movies">
+      <!-- searched movies -->
+      <div v-if="searchInput !== ''" id="movies-grid" class="movies-grid">
+        <div
+          v-for="(movie, index) in searchedMovies"
+          :key="index"
+          class="movie"
+        >
+          <div class="movie-img">
+            <img
+              :src="`https://image.tmdb.org/t/p/w500/${movie.poster_path}`"
+              alt="movie poster"
+            />
+            <p class="review">{{ movie.vote_average }}</p>
+            <p class="overview">{{ movie.overview }}</p>
+          </div>
+          <div class="info">
+            <p class="title">
+              {{ movie.title.slice(0, 25) }}
+              <span v-if="movie.title.length > 25">...</span>
+            </p>
+            <p class="release">
+              Released:
+              {{
+                new Date(movie.release_date).toLocaleString('en-US', {
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric',
+                })
+              }}
+            </p>
+            <NuxtLink
+              class="button button-light"
+              :to="{ name: 'movies-movieid', params: { movieid: movie.id } }"
+              >Get More Info</NuxtLink
+            >
+          </div>
         </div>
-        <div class="info">
-          <p class="title">
-            {{movie.title.slice(0,25)}}
-            <span v-if="movie.title.length > 25">...</span>
-          </p>
-          <p class="release">
-            Released: 
-            {{
-              new Date(movie.release_date).toLocaleString('en-US',{
-                month: 'long',
-                day: 'numeric',
-                year: 'numeric',
-              })
-            }}
-          </p>
-          <NuxtLink class="button button-light" :to="{name: 'movies-movieid', params:{movieid:movie.id}}">Get More Info</NuxtLink>
+      </div>
+
+      <!-- now streaming -->
+      <div v-else id="movies-grid" class="movies-grid">
+        <div v-for="(movie, index) in movies" :key="index" class="movie">
+          <div class="movie-img">
+            <img
+              :src="`https://image.tmdb.org/t/p/w500/${movie.poster_path}`"
+              alt=""
+            />
+            <p class="review">{{ movie.vote_average }}</p>
+            <p class="overview">{{ movie.overview }}</p>
+          </div>
+          <div class="info">
+            <p class="title">
+              {{ movie.title.slice(0, 25) }}
+              <span v-if="movie.title.length > 25">...</span>
+            </p>
+            <p class="release">
+              Released:
+              {{
+                new Date(movie.release_date).toLocaleString('en-US', {
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric',
+                })
+              }}
+            </p>
+            <NuxtLink
+              class="button button-light"
+              :to="{ name: 'movies-movieid', params: { movieid: movie.id } }"
+              >Get More Info</NuxtLink
+            >
+          </div>
         </div>
       </div>
     </div>
-
-    <!-- now streaming -->
-    <div v-else id="movies-grid" class="movies-grid">
-      <div v-for="(movie,index) in movies" :key="index" class="movie">
-        <div class="movie-img">
-          <img :src="`https://image.tmdb.org/t/p/w500/${movie.poster_path}`" alt="">
-          <p class="review">{{movie.vote_average}}</p>
-          <p class="overview">{{movie.overview}}</p>
-        </div>
-        <div class="info">
-          <p class="title">
-            {{movie.title.slice(0,25)}}
-            <span v-if="movie.title.length > 25">...</span>
-          </p>
-          <p class="release">
-            Released: 
-            {{
-              new Date(movie.release_date).toLocaleString('en-US',{
-                month: 'long',
-                day: 'numeric',
-                year: 'numeric',
-              })
-            }}
-          </p>
-          <NuxtLink class="button button-light" :to="{name: 'movies-movieid', params:{movieid:movie.id}}">Get More Info</NuxtLink>
-        </div>
-      </div>
-    </div>
+    <Footer />
   </div>
-  <Footer/>
-</div>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from 'axios'
 
 export default {
-  data(){
-    return{
-      movies:[],
-      searchedMovies:[],
+  data() {
+    return {
+      movies: [],
+      searchedMovies: [],
       searchInput: '',
-      apikey: process.env.apikey
+      apikey: process.env.apikey,
     }
   },
-  async fetch(){
-    if(this.searchInput === ''){
-    await this.getMovies()
-    return
+  async fetch() {
+    if (this.searchInput === '') {
+      await this.getMovies()
+      return
     }
-      
+
     await this.getSearchedMovies()
-    
   },
-  head(){
-    return{
-      title : 'Movie App - Streaming New Movie Info',
+  head() {
+    return {
+      title: 'Movie App - Streaming New Movie Info',
       meta: [
         {
-          hid:'description',
-          name:'description',
-          content:'Get all info about movie streaming'
+          hid: 'description',
+          name: 'description',
+          content: 'Get all info about movie streaming',
         },
         {
-          hid:'keywords',
-          name:'keywords',
-          content:'movies,stream,streaming,info movie'
-        }
-      ]
+          hid: 'keywords',
+          name: 'keywords',
+          content: 'movies,stream,streaming,info movie',
+        },
+      ],
     }
   },
-  fetchDelay : 1000,
+  fetchDelay: 1000,
   methods: {
-    async getMovies(){
-      const data = axios.get(`https://api.themoviedb.org/3/movie/now_playing?api_key=${this.apikey}&language=en-US&page=1`)
+    async getMovies() {
+      const data = axios.get(
+        `https://api.themoviedb.org/3/movie/now_playing?api_key=${this.apikey}&language=en-US&page=1`
+      )
       const result = await data
-      result.data.results.forEach(movie=>{
+      result.data.results.forEach((movie) => {
         this.movies.push(movie)
       })
     },
-    async getSearchedMovies(){
-      const data = axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${this.apikey}&language=en-US&page=1&query=${this.searchInput}`)
+    async getSearchedMovies() {
+      const data = axios.get(
+        `https://api.themoviedb.org/3/search/movie?api_key=${this.apikey}&language=en-US&page=1&query=${this.searchInput}`
+      )
       const result = await data
-      result.data.results.forEach(movie => {
-      this.searchedMovies.push(movie)
-    })
+      result.data.results.forEach((movie) => {
+        this.searchedMovies.push(movie)
+      })
     },
     clearSearch() {
       this.searchInput = ''
       this.searchedMovies = []
-    }
-  }
+    },
+  },
 }
 </script>
 
 <style lang="scss">
 .home {
-  background-color: rgb(20,22,23);
+  background-color: rgb(20, 22, 23);
   .loading {
     padding-top: 120px;
     align-items: flex-start;
@@ -146,7 +174,7 @@ export default {
   .search {
     display: flex;
     padding: 32px 4rem;
-    background-color: rgb(20,22,23);
+    background-color: rgb(20, 22, 23);
     input {
       max-width: 350px;
       width: 100%;
@@ -160,13 +188,13 @@ export default {
     .button {
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
-      border-color:#11ae91;
+      border-color: #11ae91;
       background-color: #11ae91;
     }
   }
   .movies {
     padding: 32px 4rem;
-    background-color: rgb(20,22,23);
+    background-color: rgb(20, 22, 23);
 
     .movies-grid {
       display: grid;
@@ -239,7 +267,7 @@ export default {
           }
           .button {
             margin-top: 8px;
-            border-color:#11ae91;
+            border-color: #11ae91;
           }
         }
       }
