@@ -24,6 +24,9 @@ $ npm run start
 $ npm run generate
 ```
 
+LIVE NOW 
+https://moviename.netlify.app/
+
 ## Preview
 
 ![movie-app-nuxt](./assets/img/ss-app.png 'Text to show on mouseover')
